@@ -1,52 +1,44 @@
 package com.waw3ru.oneday.actualcontroller;
 
 import com.waw3ru.oneday.model.Task;
-import com.waw3ru.oneday.repository.TaskRepository; 
+import com.waw3ru.oneday.service.TaskService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController 
 @RequestMapping("/api/tasks")
-
 public class TaskController {
     
-    private final TaskRepository taskRepository;
+    private final TaskService taskService;
 
-    public TaskController(TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
     @GetMapping
     public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+        return taskService.getAllTasks();
     }
 
     @PostMapping
     public Task createTask(@RequestBody Task task) {
-        return taskRepository.save(task);
-        
+        return taskService.createTask(task);
     }
 
-
-@GetMapping("/{id}")
-public Task getTaskById(@PathVariable Long id) {
-    return taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
-}
-@PutMapping("/{id}")
-public Task updateTask(@PathVariable Long id, @RequestBody Task updatedTask) {
-    Task existingTask = taskRepository.findById(id).orElseThrow(() -> new RuntimeException("Task not found"));
-    existingTask.setTitle(updatedTask.getTitle());
-    existingTask.setCompleted(updatedTask.isCompleted());
-    return taskRepository.save(existingTask);
-}
-
-@DeleteMapping("/{id}")
-public void deleteTask(@PathVariable Long id) {
-    if(!taskRepository.existsById(id)) {
-        throw new RuntimeException("Task not found");
+    @GetMapping("/{id}")
+    public Task getTaskById(@PathVariable Long id) {
+        return taskService.getTaskById(id);
     }
-    taskRepository.deleteById(id);
-}
 
+    @PutMapping("/{id}")
+    public Task updateTask(@PathVariable Long id, @RequestBody Task task) {
+        return taskService.updateTask(id, task);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+    }
 }
